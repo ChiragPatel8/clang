@@ -109,6 +109,9 @@ def ObjCInterfaceDeclInitMethod : SubsetSubject<ObjCMethod,
 def Struct : SubsetSubject<Record,
                            [{!S->isUnion()}], "structs">;
 
+def Union : SubsetSubject<Record,
+                           [{S->isUnion()}], "unions">;
+
 def TLSVar : SubsetSubject<Var,
                            [{S->getTLSKind() != 0}], "thread-local variables">;
 
@@ -3115,4 +3118,15 @@ def SpeculativeLoadHardening : InheritableAttr {
   let Spellings = [Clang<"speculative_load_hardening">];
   let Subjects = SubjectList<[Function, ObjCMethod], ErrorDiag>;
   let Documentation = [SpeculativeLoadHardeningDocs];
+}
+
+def ScalarStorageOrder : TypeAttr {
+  let Spellings = [GNU<"scalar_storage_order">];
+  let Subjects = SubjectList<[Struct, Union], ErrorDiag>;
+  let Args = [
+    EnumArgument<"Endianess", "EndianessTy",
+                 [ "big-endian", "little-endian" ],
+                 [ "BigEndian", "LittleEndian" ]>
+  ];
+  let Documentation = [Undocumented];
 }
