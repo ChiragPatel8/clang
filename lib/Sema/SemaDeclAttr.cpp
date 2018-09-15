@@ -6080,6 +6080,30 @@ static void handleDestroyAttr(Sema &S, Decl *D, const ParsedAttr &A) {
     handleSimpleAttributeWithExclusions<NoDestroyAttr, AlwaysDestroyAttr>(S, D, A);
 }
 
+static void handleScalarStorageOrder(Sema &S, Decl *D, const ParsedAttr &AL) {
+  // Check the attribute arguments.
+  if (AL.getNumArgs() != 1) {
+    S.Diag(AL.getLoc(), diag::err_attribute_too_many_arguments) << AL << 1;
+    return;
+  }
+
+  StringRef Str;
+  SourceLocation ArgLoc;
+
+  if (!S.checkStringLiteralArgumentAttr(AL, 0, Str, &ArgLoc))
+    return;
+
+  ScalarStorageOrderAttr::EndianessTy Endianess;
+  if (!ScalarStorageOrderAttr::ConvertStrToEndianessTy(Str, Endianess)) {
+    S.Diag(AL.getLoc(), diag::err_sso_arg_wrong) << AL << Str << ArgLoc;
+    return;
+  }
+
+  unsigned ByteOrder = AL.getAttributeSpellingListIndex();
+  D->addAttr(::new (S.Context)
+             ScalarStorageOrderAttr(AL.getLoc(), S.Context, Endianess, ByteOrder));  
+}
+
 //===----------------------------------------------------------------------===//
 // Top Level Sema Entry Points
 //===----------------------------------------------------------------------===//
@@ -6766,6 +6790,10 @@ static void ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D,
   case ParsedAttr::AT_AlwaysDestroy:
   case ParsedAttr::AT_NoDestroy:
     handleDestroyAttr(S, D, AL);
+    break;
+
+  case ParsedAttr::AT_ScalarStorageOrder:
+    handleScalarStorageOrder(S, D, AL);
     break;
   }
 }

@@ -9545,9 +9545,11 @@ def err_std_compare_type_not_supported : Error<
    "the type is not trivially copyable|"
    "the type does not have the expected form}1">;
 
+def err_sso_arg_wrong : Error<
+  "scalar_storage_order argument must be one of 'big-endian' or 'little-endian'">;
 def err_addressof_scalar_with_reverse_order : Error<
   "cannot take address of scalar with reverse storage order">;
-def warn_addressof_array_with_reverse_scalar_order : Warning<
+def ext_addressof_array_with_reverse_scalar_order : ExtWarn<
   "address of array with reverse scalar storage order requested">,
   InGroup<ScalarStorageOrder>;
 } // end of sema component.

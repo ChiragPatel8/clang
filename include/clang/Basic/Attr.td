@@ -3120,9 +3120,9 @@ def SpeculativeLoadHardening : InheritableAttr {
   let Documentation = [SpeculativeLoadHardeningDocs];
 }
 
-def ScalarStorageOrder : TypeAttr {
+def ScalarStorageOrder : Attr {
   let Spellings = [GNU<"scalar_storage_order">];
-  let Subjects = SubjectList<[Struct, Union], ErrorDiag>;
+  let Subjects = SubjectList<[Struct, Union], WarnDiag>;
   let Args = [
     EnumArgument<"Endianess", "EndianessTy",
                  [ "big-endian", "little-endian" ],
